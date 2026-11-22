@@ -1,0 +1,35 @@
+""'
+M - PESA FLOAT MASTER - The Game
+Massive25 - Nov 22 2026 - Embu
+Hour 6 Game Project - From Expenses to Game!
+Target: 10 Hours = Level 2.0
+Play time: Built in 11:33 AM EAT
+"""
+import random
+import time
+from datetime import datetime
+import json
+import os
+Class MpesaGame:
+    def _init_(self):
+        self.balance = 15000
+        self.level = 0.75
+        self.hour = 6
+        self.date = "2026-11-22"
+        self.time_eat = "11:33 PM"
+        self.location = "Embu"
+        self.transactions = []
+        self.customers = ["Mama Mboga", "Boda Guy" }
+        self.score = 0
+        self.day = 1
+        self.start_balance = 15000
+        print("="*70)
+        print("Game M-PESA FLOAT MASTER - EMBUBU EDITION")
+        print("="*70)
+        print(f"Player: Massive25 | Location: {self.locatiom}
+        print(F"Float: KES {self.balance} | level: {self.location}")
+        print("="*70)
+        print("RULES:")
+        print("- Customers come with M-PESA requests")
+        print("- You decide: Accept (earn fee) or Reject (loose customers)")
+        print("-wrong decisions = float drops!")
