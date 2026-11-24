@@ -1,87 +1,113 @@
+"""
 LOGGY3 PRO V2 - REAL PROJECT
 Massive25 - Nov 22 2026 - Embu
 Hour 6: Real M-PESA Parser App
 Target: 10H = Level 2.0
 """
+
 from datetime import datetime
-import re
 import json
-import os
+import re
+
+
 class MpesaParser:
-     """Real M-PESA SMS Parser - core of $1 pro"""
-        def _init_(self):
-            self.patterns = {
-                'sent': r'(\W+)\s+Confirmed\.\s+Ksh([\d,]+\.\d+)\s+sent to (.+?) on',
-                'received': r'You have received Ksh([\d,]+\.\d+) from',
-                'buy': r'Ksh([\d,]+\.\d+)\s+paid to (.+?)\s+on',
-                'wiithdraw': r'Ksh([\d,]+\.\d+)\s+withdrawnfrom'
-           }
-           self.parsed = []
-        def parse_sms(self, sms_text):
-            """Parse real M-PESA SMS"""
-            sms_text = sms_text.strip()
-            result = {
-                 'raw': sms_text,
-                 'timestamp': datetime.now().isoformat().
-                 'amount': 0,
-                 'type': "unknown',
-                 'recepient': '',
-                 'code': '',
-                 'parsed_at': "2026-11-22 1;01 EAT'
-              }
-              # Extract M-PESA code
-              code_match = re.search(r'\b([A-ZO-9]{10})\b', sms_text)
-              if code match:
-                  result['code'] = code_match.group(1)
-              # Extract amount
-              amount_match = re.search(r'Ksh([\d,]+\d+)', sms_text)
-              if amount_match:
-                 amount_str = amount_match.group(1).replace(',', '')
-                 result['amount'] = float(amount_str)
-                 #  Determine type
-                 if 'sent to' in sms_text.lower()
-                     result['type'] = 'sent'
-                     m = re.search(r'sent to (.+?) on' ,sms_text, re.IGNORECASE)
-                     if m: result['recipient'] = m.group(1)
-               elif 'received' in sms_text.lower():
-                     result['type'] = 'received'
-               elif 'paid to' insms_text.lower():
-                     result['type'] = 'buy'
-                     m = re.search(r'paid to(.+?) on', sms_text, re.IGNORECASE)
-                     if m: result['recipient'] = m.group(1)
-               elif 'withdrawn' in sms_text.lower():
-                    result['type'] = 'withdraw'
-               self.parsed.append(result)
-               return results
-           def parse_batch(self,sms_list):
-              results = []
-              for sms in sms_list:
-                  results.append(self.parse_sms(sms))
-              return results
-           def get_total_spent(self):
-               return sum(p['amount'] for p in self.parsed if p['type'] in ['sent','buy'])
-           de export_json(self, filename='loggy3_data_nov22.json'):
-              with open(filename, 'w') as f:
-                   json.dump(self.parsed, f, indent=2)
-              print(f"[EXPORT] saved {len(self.parsed)} transactions to {filename}")
-      #Test with real M-PESA format
-      if _name_ == "_main_":
-          print("="60)
-          print("LOGGY3 PRO v2 - Hour 6 Project Test")
-          print('Time: 1:43 PM EAT Nov 22")
-          print("="*60)
-          parser = MpesaParser()
-          # Real M-PESA examples
-          sample = [
-              "QGH7T89JO Confirmed. Ksh200.00 sent to JOHN DOE on 15/11/26 at 7:30 AM. New  M-PESA balance is Ksh14,800",
-              "QGH7T9I0J1 Confirmed. Ksh450.00 paid to AIRTEL DATA on 18/11/2026 at 8:45 AM. New M-PESA balance Ksh10,000",
-              "QGI2A1B2C3 Confirmed. Ksh850.00 paid to JAVA HOUSE on 21/11/2026 at 11:15 AM. New M-PESA balance Ksh30,780",
-          ]
-          for sms in samples:
-              parsed = parser.parse_sms(sms)
-              print(f"\nSMS: {sms[:50]}...")
-              print(f"-> Parsed: {parsed['type']} | KES {parsed['amount']} | To: {parsed['recipient']}")
-           print(f"\nTotal parsed: {len(parser.parsed)}")
-           print(f"Total spent: KES {parser.get_total_spent()}")
-           parser.export_json()
-           print("\nHour 6 DONE - Ready for Google Sheets sync!")
+    """Parse M-PESA transaction SMS messages."""
+
+    def __init__(self):
+        self.parsed = []
+
+    def parse_sms(self, sms_text):
+        """Parse one M-PESA SMS and append the transaction to the history."""
+        if not isinstance(sms_text, str):
+            raise TypeError("sms_text must be a string")
+
+        sms_text = sms_text.strip()
+        result = {
+            "raw": sms_text,
+            "timestamp": datetime.now().isoformat(),
+            "amount": 0.0,
+            "type": "unknown",
+            "recipient": "",
+            "code": "",
+        }
+
+        if not sms_text:
+            return result
+
+        code_match = re.search(r"\b[A-Z0-9]{10}\b", sms_text)
+        if code_match:
+            result["code"] = code_match.group(0)
+
+        amount_match = re.search(r"Ksh([\d,]+(?:\.\d+)?)", sms_text, re.IGNORECASE)
+        if amount_match:
+            result["amount"] = float(amount_match.group(1).replace(",", ""))
+
+        lower_text = sms_text.lower()
+
+        if "sent to" in lower_text:
+            result["type"] = "sent"
+            match = re.search(r"sent to\s+(.+?)\s+on\b", sms_text, re.IGNORECASE)
+            if match:
+                result["recipient"] = match.group(1).strip()
+        elif "received" in lower_text:
+            result["type"] = "received"
+            match = re.search(r"(?:received\s+Ksh[\d,]+(?:\.\d+)?\s+from\s+)(.+?)(?:\s+on\b|\.\s|$)", sms_text, re.IGNORECASE)
+            if match:
+                result["recipient"] = match.group(1).strip()
+        elif "paid to" in lower_text:
+            result["type"] = "buy"
+            match = re.search(r"paid to\s+(.+?)\s+on\b", sms_text, re.IGNORECASE)
+            if match:
+                result["recipient"] = match.group(1).strip()
+        elif "withdrawn" in lower_text:
+            result["type"] = "withdraw"
+
+        self.parsed.append(result)
+        return result
+
+    def parse_batch(self, sms_list):
+        """Parse a batch of SMS strings."""
+        if sms_list is None:
+            raise TypeError("sms_list cannot be None")
+        return [self.parse_sms(sms) for sms in sms_list]
+
+    def get_total_spent(self):
+        """Return the total amount spent on sent and purchase transactions."""
+        return sum(
+            transaction["amount"]
+            for transaction in self.parsed
+            if transaction["type"] in {"sent", "buy", "withdraw"}
+        )
+
+    def export_json(self, filename="loggy3_data_nov22.json"):
+        """Export parsed transactions to a JSON file."""
+        with open(filename, "w", encoding="utf-8") as file:
+            json.dump(self.parsed, file, indent=2, ensure_ascii=False)
+        print(f"[EXPORT] saved {len(self.parsed)} transactions to {filename}")
+
+
+if __name__ == "__main__":
+    print("=" * 60)
+    print("LOGGY3 PRO v2 - Hour 6 Project Test")
+    print("Time: 1:43 PM EAT Nov 22")
+    print("=" * 60)
+
+    parser = MpesaParser()
+    samples = [
+        "QGH7T89JO Confirmed. Ksh200.00 sent to JOHN DOE on 15/11/26 at 7:30 AM. New M-PESA balance is Ksh14,800",
+        "QGH7T9I0J1 Confirmed. Ksh450.00 paid to AIRTEL DATA on 18/11/2026 at 8:45 AM. New M-PESA balance Ksh10,000",
+        "QGI2A1B2C3 Confirmed. Ksh850.00 paid to JAVA HOUSE on 21/11/2026 at 11:15 AM. New M-PESA balance Ksh30,780",
+    ]
+
+    for sms in samples:
+        parsed = parser.parse_sms(sms)
+        print(f"\nSMS: {sms[:50]}...")
+        print(
+            f"-> Parsed: {parsed['type']} | KES {parsed['amount']} | "
+            f"To: {parsed['recipient']}"
+        )
+
+    print(f"\nTotal parsed: {len(parser.parsed)}")
+    print(f"Total spent: KES {parser.get_total_spent()}")
+    parser.export_json()
+    print("\nHour 6 DONE - Ready for Google Sheets sync!")
