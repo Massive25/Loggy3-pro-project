@@ -1,26 +1,27 @@
-# Loggy3 Pro Projects - M-PESA Expense Tracker
-Built for Loggy3 Tier $1 Pro Upgrade | 10-Hours Challenge
-## What This Project Does
-Tracks daily expenses in KES' perfect for freelancers in Kenya.
-Calculates total earnings and pro tier goals.
-##Features
--Add expenses by category
--Validates amount (no zero/negative)
--shows full report
--calculates total automatically
-##How to Run
-1. Python expense_tracker.py
-2. See report in terminal
- ##Tech Used
--Python 3
--GitHub for version control
-##Author
-Massive25- Loggy3 Pro Learner
-Embu, Kenya- Built during Hour 5
-##Live Demo
-Link coming soon (Hour 5 deployment)
-## Next Steps (Hour 6-10)
-- Dashboard in Excel
-- M-PESA API intergration
-- TinkerCAD link
-- Final PDF report
+# Loggy3 M-PESA Expense Tracker
+
+A working, browser-based M-PESA SMS parser and expense tracker.
+
+## Features
+
+- Paste and parse M-PESA SMS messages
+- Automatically detect transaction code, amount, type, party, date, and balance
+- Save transactions in browser storage
+- View totals and the latest detected balance
+- Export all transactions as CSV
+- Work entirely offline after loading
+
+## Run locally
+
+```bash
+python3 -m http.server 8000
+```
+
+Open `http://localhost:8000`.
+
+## Publish with GitHub Pages
+
+1. Merge this branch into `main`.
+2. Open **Settings → Pages**.
+3. Under **Build and deployment**, choose **Deploy from a branch**.
+4. Select `main` and the `/ (root)` folder.
