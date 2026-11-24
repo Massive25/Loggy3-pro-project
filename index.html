@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Loggy3 M-PESA Tracker</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="app">
+    <header>
+      <div>
+        <p class="eyebrow">LOGGY3 PRO</p>
+        <h1>M-PESA Expense Tracker</h1>
+      </div>
+      <button id="clearBtn" class="danger" type="button">Clear all</button>
+    </header>
+
+    <section class="grid">
+      <article class="card input-card">
+        <h2>Paste M-PESA SMS</h2>
+        <label for="smsInput">Transaction message</label>
+        <textarea id="smsInput" rows="8" placeholder="Example: QGH7T89JO Confirmed. Ksh200.00 sent to JOHN DOE on 15/11/26 at 7:30 AM."></textarea>
+        <p id="message" class="message" role="status"></p>
+        <div class="actions">
+          <button id="addBtn" type="button">Add transaction</button>
+          <button id="exportBtn" class="secondary" type="button">Export CSV</button>
+        </div>
+      </article>
+
+      <article class="card summary">
+        <h2>Summary</h2>
+        <div class="stats">
+          <div><span>Transactions</span><strong id="count">0</strong></div>
+          <div><span>Total spent</span><strong id="total">KES 0.00</strong></div>
+          <div><span>Balance</span><strong id="balance">KES 0.00</strong></div>
+        </div>
+        <h3>Recent transactions</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Date</th><th>Code</th><th>Type</th><th>Party</th><th>Amount</th></tr></thead>
+            <tbody id="transactions"></tbody>
+          </table>
+        </div>
+      </article>
+    </section>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>
